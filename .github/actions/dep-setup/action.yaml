@@ -1,0 +1,20 @@
+name: "Dependencies setup"
+description: "Install dependencies and setup dependencies cache"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install package manager
+      uses: oven-sh/setup-bun@v2
+
+    - name: Setup cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: ${{ runner.os }}-${{ matrix.bun }}-bun-${{ hashFiles('**/bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.bun }}-bun-
+
+    - name: Install dependencies
+      shell: bash
+      run: bun install
