@@ -1,5 +1,8 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+import type { MouseEventHandler } from "react";
+import Link from "next/link";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -8,8 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import type { LucideIcon } from "lucide-react";
-import Link from "next/link";
+import { useAuth, useClerk } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 
 type SectionItem = {
   title: string;
@@ -24,6 +27,21 @@ type SectionProps = {
 };
 
 const Section = ({ items, title }: SectionProps) => {
+  const { isSignedIn } = useAuth();
+  const clerk = useClerk();
+  const path = usePathname();
+
+  const makeItemClickHandler = (
+    item: SectionItem,
+  ): MouseEventHandler<HTMLButtonElement> => {
+    return (e) => {
+      if (item.auth && !isSignedIn) {
+        e.preventDefault();
+        clerk.openSignIn();
+      }
+    };
+  };
+
   return (
     <SidebarGroup>
       {title && <SidebarGroupLabel>{title}</SidebarGroupLabel>}
@@ -34,8 +52,8 @@ const Section = ({ items, title }: SectionProps) => {
               <SidebarMenuButton
                 tooltip={item.title}
                 asChild
-                isActive={false}
-                onClick={() => {}}
+                isActive={path === item.url}
+                onClick={makeItemClickHandler(item)}
               >
                 <Link href={item.url} className="flex items-center gap-4">
                   <item.icon />
