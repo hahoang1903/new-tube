@@ -30,3 +30,6 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: dummy
+          CLERK_SECRET_KEY: dummy
